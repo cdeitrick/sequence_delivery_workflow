@@ -63,7 +63,8 @@ def authorize_with_login() -> OAuth2:
 	return authorization
 
 
-CLIENT = Client(authorize_with_oauth2())
+#CLIENT = Client(authorize_with_oauth2())
+CLIENT = Client(authorize_with_login())
 FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)
 if __name__ == "__main__":
 	pass
