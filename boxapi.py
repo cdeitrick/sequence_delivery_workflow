@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from typing import Dict
-
+import re
 from boxsdk import Client, OAuth2
 
 TOKEN_STORAGE = Path.home() / "box_tokens.json"
@@ -55,7 +55,14 @@ def authorize_with_login() -> OAuth2:
 	auth_request_url, csrf_token = authorization.get_authorization_url(redirect_url)
 	print("Enter this URL into a browser to authorize the app.")
 	print(auth_request_url)
-	access_code = input("Please enter the access code: ")
+	#https://migsapp.com/auth?state=box_csrf_token_mlbRGxXCho5Z1NDg&code=Bu2YNuNeCa1g5mThmka4vjRZb58LBJkL
+	access_code_url = input("Please enter the access code: ")
+	access_code = re.match("code=(.*)$", access_code_url)
+	if access_code:
+		access_code = access_code.group(0)
+	else:
+		message = f"invalid access url: {access_code_url}"
+		raise ValueError(message)
 	print("Entered ", access_code)
 
 	access_token, refresh_token = authorization.authenticate(access_code)
