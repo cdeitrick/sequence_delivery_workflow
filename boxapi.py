@@ -56,12 +56,13 @@ def authorize_with_login() -> OAuth2:
 	print("Enter this URL into a browser to authorize the app.")
 	print(auth_request_url)
 	#https://migsapp.com/auth?state=box_csrf_token_mlbRGxXCho5Z1NDg&code=Bu2YNuNeCa1g5mThmka4vjRZb58LBJkL
-	access_code_url = input("Please enter the access code: ")
-	access_code = re.match("code=(.*)$", access_code_url)
+	access_code_url = input("Please enter the access code url: ")
+	access_code = re.match("code=(.*)$", access_code_url.strip())
 	if access_code:
 		access_code = access_code.group(0)
 	else:
 		message = f"invalid access url: {access_code_url}"
+		print(access_code)
 		raise ValueError(message)
 	print("Entered ", access_code)
 
