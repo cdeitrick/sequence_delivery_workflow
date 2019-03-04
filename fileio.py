@@ -159,10 +159,3 @@ def generate_project_checksums(project_folder: Path) -> Path:
 
 
 
-if __name__ == "__main__":
-	import re
-
-	string = "160526_NB501145_0011_AHMW7MBGXX/"
-	match = re.search("^[\d]+_", string)
-	print(match)
-	print(match.group(0))

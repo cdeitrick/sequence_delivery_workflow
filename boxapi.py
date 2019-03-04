@@ -53,6 +53,15 @@ def store_tokens(access_code: str, refresh_code: str):
 		)
 	)
 
+def parse_url(url:str):
+	head, sep, parameters = url.rpartition('/')
+	auth, sep, response = parameters.rpartition('?')
+	elements = response.split('&')
+	data = dict()
+	for element in elements:
+		key, value = element.split('=')
+		data[key] = value
+	return data
 
 def authorize_with_login() -> OAuth2:
 	credentials = get_credentials()
@@ -77,8 +86,8 @@ def authorize_with_login() -> OAuth2:
 	#	message = f"invalid access url: {access_code_url}"
 	#	print(access_code)
 	#	raise ValueError(message)
-	access_code = access_code_url.split('code=')[-1]
-
+	parameters = parse_url(access_code_url)
+	access_code = parameters['code']
 	print("Entered ", access_code)
 
 	access_token, refresh_token = authorization.authenticate(access_code)
