@@ -5,7 +5,7 @@ from typing import Dict
 from boxsdk import Client, OAuth2
 
 TOKEN_STORAGE = Path.home() / "box_tokens.json"
-PARENT_FOLDER_ID = "63336197339"
+
 DEVELOPER_TOKEN = "1popFVeRf3KpCBNCZkWviCPLazVMGXyS"
 
 
@@ -97,6 +97,7 @@ def authorize_with_login() -> OAuth2:
 
 # CLIENT = Client(authorize_with_oauth2())
 CLIENT = Client(authorize_with_login())
+PARENT_FOLDER_ID = "63336197339"
 FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)
 if __name__ == "__main__":
 	pass
