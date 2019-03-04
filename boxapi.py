@@ -12,7 +12,7 @@ DEVELOPER_TOKEN = "1popFVeRf3KpCBNCZkWviCPLazVMGXyS"
 def get_credentials() -> Dict[str, str]:
 	""" Retrieves the client ID and client secret that have been saved previously."""
 	beagle_path = Path("/home/data/boxapi.txt")
-	if beagle_path.exists:
+	if beagle_path.exists():
 		contents = [i.strip() for i in beagle_path.read_text().split("\n") if i]
 		key, secret, folder_id = contents
 		data = {
