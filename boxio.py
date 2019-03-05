@@ -44,6 +44,7 @@ def file_exists(project_name: str, file_name: Union[str, Path]) -> bool:
 def get_box_folder(parent_folder, item_name: str):
 	""" Attempts to find an existing project folder on box.com. If no folder is found, create one."""
 	existing_items = parent_folder.item_collection['entries']
+	print(parent_folder, item_name)
 	pprint(existing_items)
 	for existing_item in existing_items:
 		if existing_item.name == item_name:
@@ -51,6 +52,7 @@ def get_box_folder(parent_folder, item_name: str):
 			break
 	else:
 		# Could not locate the folder on box.com. create one.
+
 		subfolder = parent_folder.create_subfolder(item_name)
 	# Retrieve the folder properties.
 	subfolder = subfolder.get(fields = None, etag = None)
