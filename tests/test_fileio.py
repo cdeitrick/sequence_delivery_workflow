@@ -16,12 +16,20 @@ def test_get_project_samples():
 	assert [i.name for i in sample_files] == ["25", "39"]
 
 def test_get_sample_files():
-	folder = Path("dmux_data/BombergerLab/25")
 	expected = (
 		Path("dmux_data/BombergerLab/25/25_S30_R1_001.fastq.gz"),
 		Path("dmux_data/BombergerLab/25/25_S30_R2_001.fastq.gz"),
 		Path("dmux_data/BombergerLab/25/25_S30_I1_001.fastq.gz"),
 		Path("dmux_data/BombergerLab/25/25_S30_I2_001.fastq.gz")
 	)
-	result = fileio.get_sample_files(folder)
+	class FakePath():
+		def iterdir(self):
+			files = (
+				Path("dmux_data/BombergerLab/25/25_S30_R2_001.fastq.gz"),
+				Path("dmux_data/BombergerLab/25/25_S30_I1_001.fastq.gz"),
+				Path("dmux_data/BombergerLab/25/25_S30_I2_001.fastq.gz"),
+				Path("dmux_data/BombergerLab/25/25_S30_R1_001.fastq.gz")
+			)
+			return files
+	result = fileio.get_sample_files(FakePath())
 	assert expected == result

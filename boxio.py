@@ -52,7 +52,6 @@ def get_box_folder(parent_folder, item_name: str):
 			break
 	else:
 		# Could not locate the folder on box.com. create one.
-
 		subfolder = parent_folder.create_subfolder(item_name)
 	# Retrieve the folder properties.
 	subfolder = subfolder.get(fields = None, etag = None)
