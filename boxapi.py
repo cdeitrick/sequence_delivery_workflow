@@ -53,7 +53,8 @@ def store_tokens(access_code: str, refresh_code: str):
 		)
 	)
 
-def parse_url(url:str):
+
+def parse_url(url: str):
 	head, sep, parameters = url.rpartition('/')
 	auth, sep, response = parameters.rpartition('?')
 	elements = response.split('&')
@@ -62,6 +63,7 @@ def parse_url(url:str):
 		key, value = element.split('=')
 		data[key] = value
 	return data
+
 
 def authorize_with_login() -> OAuth2:
 	credentials = get_credentials()

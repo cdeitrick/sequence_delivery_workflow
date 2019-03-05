@@ -5,6 +5,8 @@ from typing import Any, List, Optional, Union
 from pprint import pprint
 import boxapi
 import fileio
+import logging
+logger = logging.getLogger(__file__)
 
 
 def _get_project_names_from_dmux_folder(folder: Path):
@@ -42,6 +44,7 @@ def file_exists(project_name: str, file_name: Union[str, Path]) -> bool:
 def get_box_folder(parent_folder, item_name: str):
 	""" Attempts to find an existing project folder on box.com. If no folder is found, create one."""
 	existing_items = parent_folder.item_collection['entries']
+	pprint(existing_items)
 	for existing_item in existing_items:
 		if existing_item.name == item_name:
 			subfolder = existing_item
