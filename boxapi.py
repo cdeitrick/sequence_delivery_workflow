@@ -105,8 +105,12 @@ CLIENT = Client(authorize_with_login())
 PARENT_FOLDER_ID = "63336197339"
 print("parent folder ID: ", PARENT_FOLDER_ID)
 
-FOLDER = CLIENT.folder("63336197339").get(fields = None, etag = None)
-
+try:
+	FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)
+except BoxAPIException:
+	root_folder = CLIENT.root_folder()
+	message = f"Cannot find a folder with id {PARENT_FOLDER_ID}. Current folder is {root_folder}"
+	raise ValueError(message)
 
 if __name__ == "__main__":
-	pass
+	print(FOLDER)
