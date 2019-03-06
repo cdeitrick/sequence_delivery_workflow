@@ -2,12 +2,13 @@ import functools
 import itertools
 import logging
 from pathlib import Path
-from pprint import pprint
 from typing import Any, List, Optional, Union
+
+from boxsdk import BoxAPIException
+from boxsdk.object import folder as boxfolder
 
 import boxapi
 import fileio
-from boxsdk import BoxAPIException
 
 logger = logging.getLogger(__file__)
 
@@ -45,15 +46,17 @@ def file_exists(project_name: str, file_name: Union[str, Path]) -> bool:
 	project_filenames = [i.name for i in project_files]
 	return file_name in project_filenames
 
-def item_in_folder(folder, item_name:str)->bool:
+
+def item_in_folder(folder: boxfolder, item_name: str) -> bool:
 	folder_items = folder.item_collection['entries']
 	folder_item_names = [i.name for i in folder_items]
 	return item_name in folder_item_names
 
-def get_box_folder(parent_folder, item_name: str):
+
+def get_box_folder(parent_folder: boxfolder, item_name: str):
 	""" Attempts to find an existing project folder on box.com that is in the parent_folder.
 		If no folder is found, create one.
-		"""
+	"""
 	existing_items = parent_folder.item_collection['entries']
 
 	for existing_item in existing_items:
