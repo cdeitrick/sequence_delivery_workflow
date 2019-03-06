@@ -108,7 +108,7 @@ print("parent folder ID: ", PARENT_FOLDER_ID)
 try:
 	FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)
 except BoxAPIException:
-	root_folder = CLIENT.root_folder()
+	root_folder = CLIENT.folder('0').get(fields = None, etag = None)
 	message = f"Cannot find a folder with id {PARENT_FOLDER_ID}. Current folder is {root_folder}."
 	current_contents = root_folder.item_collection['Entries']
 	from pprint import pprint
