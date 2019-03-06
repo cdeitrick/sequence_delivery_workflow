@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Dict
 
-from boxsdk import Client, OAuth2
+from boxsdk import Client, OAuth2, BoxAPIException
 
 TOKEN_STORAGE = Path.home() / "box_tokens.json"
 
@@ -104,6 +104,10 @@ def authorize_with_login() -> OAuth2:
 CLIENT = Client(authorize_with_login())
 PARENT_FOLDER_ID = "63336197339"
 print("parent folder ID: ", PARENT_FOLDER_ID)
-FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)
+try:
+	FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)
+except BoxAPIException:
+	print(f"Could not find id {PARENT_FOLDER_ID}.")
+
 if __name__ == "__main__":
 	pass
