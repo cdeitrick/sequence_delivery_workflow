@@ -45,10 +45,10 @@ def authorize_with_oauth2():
 	return auth
 
 
-def store_tokens(access_code: str, refresh_code: str):
+def store_tokens(access_token: str, refresh_token: str):
 	TOKEN_STORAGE.write_text(
 		json.dumps(
-			{'accessCode': access_code, 'refreshCode': refresh_code},
+			{'accessToken': access_token, 'refreshToken': refresh_token},
 			indent = 4
 		)
 	)
@@ -70,34 +70,37 @@ def authorize_with_login() -> OAuth2:
 	redirect_url = "https://migsapp.com/auth"
 	client_id = credentials['clientID']
 	client_secret = credentials['clientSecret']
+	if not TOKEN_STORAGE.exists():
+		authorization = OAuth2(
+			client_id = client_id,
+			client_secret = client_secret,
+		store_tokens = store_tokens
+		)
+		auth_request_url, csrf_token = authorization.get_authorization_url(redirect_url)
+		print("Enter this URL into a browser to authorize the app.")
+		print(auth_request_url)
 
-	authorization = OAuth2(
-		client_id = client_id,
-		client_secret = client_secret
-	)
+		access_code_url = input("Please enter the access code url: ")
+		parameters = parse_url(access_code_url)
+		access_code = parameters['code']
 
-	auth_request_url, csrf_token = authorization.get_authorization_url(redirect_url)
-	print("Enter this URL into a browser to authorize the app.")
-	print(auth_request_url)
-	# https://migsapp.com/auth?state=box_csrf_token_mlbRGxXCho5Z1NDg&code=Bu2YNuNeCa1g5mThmka4vjRZb58LBJkL
-	access_code_url = input("Please enter the access code url: ")
-	# access_code = re.match("code=(.*)$", access_code_url.strip())
-	# if access_code:
-	#	access_code = access_code.group(0)
-	# else:
-	#	message = f"invalid access url: {access_code_url}"
-	#	print(access_code)
-	#	raise ValueError(message)
-	parameters = parse_url(access_code_url)
-	access_code = parameters['code']
-	print("Entered ", access_code)
+		access_token, refresh_token = authorization.authenticate(access_code)
+		#store_tokens(access_code, access_token, refresh_token)
+	else:
+		token_data = json.loads(TOKEN_STORAGE.read_text())
+		authorization = OAuth2(
+			client_id = client_id,
+			client_secret = client_secret,
+			store_tokens = store_tokens,
+			access_token = token_data['accessToken'],
+			refresh_token = token_data['refreshToken']
+		)
+		authorization.refresh(token_data['accessToken'])
 
-	access_token, refresh_token = authorization.authenticate(access_code)
-	store_tokens(access_token, refresh_token)
 	return authorization
 
 
-# CLIENT = Client(authorize_with_oauth2())
+#CLIENT = Client(authorize_with_oauth2())
 CLIENT = Client(authorize_with_login())
 PARENT_FOLDER_ID = "63336197339"
 FOLDER = CLIENT.folder(PARENT_FOLDER_ID).get(fields = None, etag = None)

@@ -16,11 +16,13 @@ def _get_project_names_from_dmux_folder(folder: Path):
 	""" Infers the project names in a sequencing run from the folder names after dmuxing."""
 
 	folders = [i.name for i in folder.iterdir() if i.is_dir()]
+	logging.debug(str(folders))
+	logging.debug(str(folder.iterdir()))
 	project_names = [i for i in folders if i not in {'Reports', 'Stats'}]
 	return project_names
 
 
-@functools.lru_cache(maxsize = 128)
+@functools.lru_cache(maxsize = None)
 def get_project_files_on_box(project_name: str) -> List:
 	project_folder = get_box_folder(boxapi.FOLDER, project_name)
 	containers = project_folder.item_collection['entries']
@@ -43,12 +45,17 @@ def file_exists(project_name: str, file_name: Union[str, Path]) -> bool:
 	project_filenames = [i.name for i in project_files]
 	return file_name in project_filenames
 
+def item_in_folder(folder, item_name:str)->bool:
+	folder_items = folder.item_collection['entries']
+	folder_item_names = [i.name for i in folder_items]
+	return item_name in folder_item_names
 
 def get_box_folder(parent_folder, item_name: str):
-	""" Attempts to find an existing project folder on box.com. If no folder is found, create one."""
+	""" Attempts to find an existing project folder on box.com that is in the parent_folder.
+		If no folder is found, create one.
+		"""
 	existing_items = parent_folder.item_collection['entries']
-	print(parent_folder, item_name)
-	pprint(existing_items)
+
 	for existing_item in existing_items:
 		if existing_item.name == item_name:
 			subfolder = existing_item
