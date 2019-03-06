@@ -110,7 +110,7 @@ try:
 except BoxAPIException:
 	root_folder = CLIENT.folder('0').get(fields = None, etag = None)
 	message = f"Cannot find a folder with id {PARENT_FOLDER_ID}. Current folder is {root_folder}."
-	current_contents = root_folder.item_collection['Entries']
+	current_contents = root_folder.item_collection['entries']
 	from pprint import pprint
 	pprint(current_contents)
 	raise ValueError(message)
