@@ -1,11 +1,14 @@
 import functools
 import itertools
+import logging
 from pathlib import Path
-from typing import Any, List, Optional, Union
 from pprint import pprint
+from typing import Any, List, Optional, Union
+
 import boxapi
 import fileio
-import logging
+from boxsdk import BoxAPIException
+
 logger = logging.getLogger(__file__)
 
 
@@ -24,11 +27,11 @@ def get_project_files_on_box(project_name: str) -> List:
 	containers = [i.get(fields = None, etag = None) for i in containers]
 	project_files = list()
 	for container in containers:
-		container_samples:List[Any] = [i.get(fields = None, etag = None) for i in container.item_collection['entries']]
-		container_files:List[List[Any]] = [sample.item_collection['entries'] for sample in container_samples if hasattr(sample, 'item_collection')]
+		container_samples: List[Any] = [i.get(fields = None, etag = None) for i in container.item_collection['entries']]
+		container_files: List[List[Any]] = [sample.item_collection['entries'] for sample in container_samples if hasattr(sample, 'item_collection')]
 		project_files += list(itertools.chain.from_iterable(container_files))
-	#pprint(project_files)
-	#project_files = list(itertools.chain.from_iterable(project_files))
+	# pprint(project_files)
+	# project_files = list(itertools.chain.from_iterable(project_files))
 	return project_files
 
 
@@ -102,13 +105,16 @@ def upload_project_samples_to_box(samples: fileio.Sample, sample_box_folder: Any
 
 	for filename in samples:
 		if filename.name in existing_files: continue
-		if filename.stat().st_size > 50E6:
-			# The chunked API raises an error if the filesize is less than 20MB.
-			chunked_uploader = sample_box_folder.get_chunked_uploader(str(filename))
-			uploaded_file = chunked_uploader.start()
-		else:
-			uploaded_file = sample_box_folder.upload(str(filename))
-		print("\t\t\tUploaded ", filename, "\t", uploaded_file)
+		try:
+			if filename.stat().st_size > 50E6:
+				# The chunked API raises an error if the filesize is less than 20MB.
+				chunked_uploader = sample_box_folder.get_chunked_uploader(str(filename))
+				uploaded_file = chunked_uploader.start()
+			else:
+				uploaded_file = sample_box_folder.upload(str(filename))
+			logger.info(f"Uploaded {filename}\t{uploaded_file}")
+		except BoxAPIException:
+			logger.error(f"Could not upload {filename}")
 
 
 if __name__ == "__main__":
